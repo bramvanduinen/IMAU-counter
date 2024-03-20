@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta viewport="width=device-width, initial-scale=0.8">
+    <title>Is there still place at IMAU?</title>
+    <!-- <link rel="icon" type="image/png" href="/images/imau_logo.png" /> -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #fafafa, #9eabe4); /* Soft color gradient */
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333; /* Dark text for contrast */
+        }
+        h1 {
+            font-size: 3rem;
+            color: #6764c0;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        p, .availability {
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+        .btn-primary {
+            background-color: #625DF5; /* Purple button */
+            border: none;
+            border-radius: 30px; /* Rounded borders */
+            padding: 15px 30px;
+            font-size: 1rem;
+            color: white;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+        .btn-primary:hover {
+            background-color: #5148C1; /* Darker purple on hover */
+        }
+        .custom-select {
+            border-radius: 30px; /* Rounded borders for select */
+            padding: .5rem 1.5rem;
+            font-size: 1rem;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        .icon {
+            font-size: 24px;
+            margin-left: 10px;
+        }
+        .green-check {
+            color: #4CAF50; /* Green color for checkmark */
+        }
+        .red-cross {
+            color: #F44336; /* Red color for cross */
+        }
+        /* Add more custom styles as needed */
+    </style>
+</head>
+<body>
+    <h1>Is there still place at IMAU?</h1>
+    <div class="availability">
+        <strong>Desks with monitor:</strong>
+        <span class="icon {{ 'green-check' if data['desks_with_monitor'] > 0 else 'red-cross' }}">
+            {{ '✔' if data['desks_with_monitor'] > 0 else '✘' }}
+        </span>
+        ({{ data['desks_with_monitor'] }})
+    </div>
+    <div class="availability">
+        <strong>Desks without monitor:</strong>
+        <span class="icon {{ 'green-check' if data['desks_without_monitor'] > 0 else 'red-cross' }}">
+            {{ '✔' if data['desks_without_monitor'] > 0 else '✘' }}
+        </span>
+        ({{ data['desks_without_monitor'] }})
+    </div>
+    <p><strong>Are the KNMI boys there?</strong> {{ data['knmi_status'] }}</p>
+    <p><strong>Last Updated:</strong> {{ data['last_updated'] }}</p>
+
+    <form action="/update" method="post">
+        <div class="form-group">
+            <label for="desks_with_monitor">Desks with monitor</label>
+            <select class="custom-select" id="desks_with_monitor" name="desks_with_monitor" required>
+                {% for num in range(7) %}
+                <option value="{{ num }}">{{ num }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="desks_without_monitor">Desks without monitor</label>
+            <select class="custom-select" id="desks_without_monitor" name="desks_without_monitor" required>
+                {% for num in range(6) %}
+                <option value="{{ num }}">{{ num }}</option>
+                {% endfor %}
+            </select>
+        </div>
+            <div class="form-group">
+                <label for="knmi_status">Are the KNMI boys there?</label>
+                <select class="custom-select" id="knmi_status" name="knmi_status" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Just One">Just One</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+</body>
+</html>
