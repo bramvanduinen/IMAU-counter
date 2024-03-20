@@ -5,13 +5,14 @@
     <meta viewport="width=device-width, initial-scale=0.8">
     <title>Is there still place at IMAU?</title>
     <!-- <link rel="icon" type="image/png" href="/images/imau_logo.png" /> -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(to bottom right, #fafafa, #9eabe4); /* Soft color gradient */
             font-family: 'Montserrat', sans-serif;
-            height: 100vh;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -41,6 +42,18 @@
             margin-top: 20px;
             box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
         }
+        .monitor{
+            background-color: #4977e7
+        }
+        .nomonitor{
+            background-color: #7cc5fa
+        }
+        .knmi{
+            background-color: #9e71ce
+        }
+        .update{
+            background-color: #86d1b3; /* Darker purple on hover */
+        }
         .btn-primary:hover {
             background-color: #5148C1; /* Darker purple on hover */
         }
@@ -60,56 +73,183 @@
         .red-cross {
             color: #F44336; /* Red color for cross */
         }
-        /* Add more custom styles as needed */
-    </style>
+    /* Flexbox for equal height cards */
+        .equal-height {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch; /* This will stretch the children vertically */
+        }
+
+        .equal-height .col-md-4 {
+            display: flex;
+            flex: 1;
+        }
+
+        .equal-height .card {
+            width: 100%; /* Makes sure the card stretches to fill the column */
+            flex-grow: 1; /* Allows the card to grow to fill the space */
+            min-height: 200px; /* Adjust the value as needed */
+            /* max-height: 100 px; */
+        }
+        .update-form-container {
+            border: 1px solid black; /* Thin black border */
+            padding: 15px; /* Some padding around the form */
+            border-radius: 15px; /* Optional: rounded corners */
+            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
+        }
+
+        @media (max-width: 991px) {
+            .update-form-container {
+                margin-top: 20px; /* Add space between the cards and form on smaller screens */
+            }
+        }
+</style>
 </head>
 <body>
-    <h1>Is there still place at IMAU?</h1>
-    <div class="availability">
-        <strong>Desks with monitor:</strong>
-        <span class="icon {{ 'green-check' if data['desks_with_monitor'] > 0 else 'red-cross' }}">
-            {{ '✔' if data['desks_with_monitor'] > 0 else '✘' }}
-        </span>
-        ({{ data['desks_with_monitor'] }})
-    </div>
-    <div class="availability">
-        <strong>Desks without monitor:</strong>
-        <span class="icon {{ 'green-check' if data['desks_without_monitor'] > 0 else 'red-cross' }}">
-            {{ '✔' if data['desks_without_monitor'] > 0 else '✘' }}
-        </span>
-        ({{ data['desks_without_monitor'] }})
-    </div>
-    <p><strong>Are the KNMI boys there?</strong> {{ data['knmi_status'] }}</p>
-    <p><strong>Last Updated:</strong> {{ data['last_updated'] }}</p>
+    <!-- <h1>Is there still place at IMAU?</h1> -->
+    <div class="container mt-4">
+        <h1>Is there still place at IMAU?</h1>
+        <div class="row">
+            <!-- Start the main column for the cards -->
+            <div class="col-lg-8">
+                <div class="row equal-height">
+                    <!-- Card for Desks with Monitor -->
+                    <div class="col-md-6 col-lg-6">
+                        <div class="card monitor text-white mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Desks with Monitor</h5>
+                                <p class="card-text">{{ data['desks_with_monitor'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card for Desks without Monitor -->
+                    <div class="col-md-6 col-lg-6">
+                        <div class="card nomonitor text-white mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Desks without Monitor</h5>
+                                <p class="card-text">{{ data['desks_without_monitor'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Continue the same row for other cards -->
+                <div class="row equal-height">
+                    <!-- Card for KNMI Status -->
+                    <div class="col-md-6 col-lg-6">
+                        <div class="card knmi text-white mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">KNMI Status</h5>
+                                <p class="card-text">{{ data['knmi_status'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card for Last Updated -->
+                    <div class="col-md-6 col-lg-6">
+                        <div class="card update text-white mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Last Updated</h5>
+                                <p class="card-text">{{ data['last_updated'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End of main column for the cards -->
+    
+            <!-- Start the column for the update form -->
+            <div class="col-lg-4">
+                <div class="update-form-container">
+                    <form action="/update" method="post">
+                        <div class="form-group">
+                            <label for="desks_with_monitor">Desks with monitor</label>
+                            <select class="custom-select" id="desks_with_monitor" name="desks_with_monitor" required>
+                                {% for num in range(7) %}
+                                <option value="{{ num }}">{{ num }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="desks_without_monitor">Desks without monitor</label>
+                            <select class="custom-select" id="desks_without_monitor" name="desks_without_monitor" required>
+                                {% for num in range(6) %}
+                                <option value="{{ num }}">{{ num }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                            <div class="form-group">
+                                <label for="knmi_status">Are the KNMI boys there?</label>
+                                <select class="custom-select" id="knmi_status" name="knmi_status" required>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="Just One">Just One</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                    </form>                </div>
+            </div> <!-- End of column for the update form -->
+        </div> <!-- End of the main row -->
+    </div> <!-- End of the container -->
 
-    <form action="/update" method="post">
-        <div class="form-group">
-            <label for="desks_with_monitor">Desks with monitor</label>
-            <select class="custom-select" id="desks_with_monitor" name="desks_with_monitor" required>
-                {% for num in range(7) %}
-                <option value="{{ num }}">{{ num }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="desks_without_monitor">Desks without monitor</label>
-            <select class="custom-select" id="desks_without_monitor" name="desks_without_monitor" required>
-                {% for num in range(6) %}
-                <option value="{{ num }}">{{ num }}</option>
-                {% endfor %}
-            </select>
-        </div>
-            <div class="form-group">
-                <label for="knmi_status">Are the KNMI boys there?</label>
-                <select class="custom-select" id="knmi_status" name="knmi_status" required>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                    <option value="Just One">Just One</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Update</button>
-        </form>
-    <a href="{{ url_for('statistics') }}" class="btn btn-primary">View Statistics</a>
+    <div class = "container mt-4">
+        <canvas id="myChart" style="max-width: 50%; height: auto;"></canvas>
+    </div>
 
+    <script type="text/javascript">
+        // Extracting data passed from Flask and converting to JSON
+        const updatesJsonData = {{ updates_data|tojson | safe }};
+        const labels = updatesJsonData.map(update => update[0]);
+        const dataPoints = updatesJsonData.map(update => update[1]);
+    
+        const ctx = document.getElementById('myChart').getContext('2d');
+    
+        // If you had declared myChart before, comment out or remove the previous declaration.
+        // const myChart = new Chart(...); // Comment this out if it exists.
+
+        // Now declare the mixed chart.
+        const mixedChart = new Chart(ctx, {
+            type: 'bar', // This will be the default type
+            data: {
+                labels: labels, // Your labels array
+                datasets: [
+                    {
+                        type: 'line', // Declare this dataset as a line chart
+                        // label: 'Line Dataset',
+                        data: dataPoints, // Your data array for the line
+                        borderColor: '#5148C1',
+                        fill: true
+                        // If you want this line chart to be drawn on the secondary axis, assign yAxisID: 'y-axis-1'
+                    },
+                    {
+                        // label: 'Bar Dataset',
+                        data: dataPoints, // Your data array for the bars
+                        backgroundColor: '#5148C1'
+                        // If you want this bar chart to be drawn on the secondary axis, assign yAxisID: 'y-axis-2'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        id: 'y-axis-1',
+                        scaleLabel: {
+                            display: true,
+                            labelString: '# of people at IMAU' // Y-axis label
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                legend: {
+                    display: false
+                }
+                }
+            }
+        );
+    </script>
+    
 </body>
 </html>

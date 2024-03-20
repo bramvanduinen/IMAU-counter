@@ -34,7 +34,26 @@ def home():
         data['desks_without_monitor'] = latest_update.desks_without_monitor
         tz = timezone(timedelta(hours=1))
         data['last_updated'] = latest_update.timestamp.astimezone(tz).strftime("%d/%m/%Y %H:%M:%S")
-    return render_template('index.html', data=data)
+    # graph
+    updates_today = DeskUpdate.query.filter(db.func.date(DeskUpdate.timestamp) == db.func.date(datetime.utcnow())).all()
+    updates_yesterday = DeskUpdate.query.filter(db.func.date(DeskUpdate.timestamp) == db.func.date(datetime.utcnow() - timedelta(days=1))).all()
+
+    if updates_today:
+        earliest_today = min(updates_today, key=lambda x: x.timestamp).timestamp
+    else:
+        earliest_today = None
+    
+    if updates_yesterday:
+        latest_yesterday = max(updates_yesterday, key=lambda x: x.timestamp).timestamp
+    else:
+        latest_yesterday = None
+
+    updates_data = [(update.timestamp.strftime('%Y-%m-%d %H:%M:%S'), update.people_count) for update in DeskUpdate.query.all()]
+
+    return render_template('index.html', data=data,
+                           updates_data=updates_data,
+                           earliest_today=earliest_today,
+                           latest_yesterday=latest_yesterday)
 
 
 @app.route('/update', methods=['POST'])
@@ -48,7 +67,7 @@ def update():
     db.session.commit()
     return redirect(url_for('home'))
 
-@app.route('/statistics')
+@app.route('/')
 def statistics():
     updates_today = DeskUpdate.query.filter(db.func.date(DeskUpdate.timestamp) == db.func.date(datetime.utcnow())).all()
     updates_yesterday = DeskUpdate.query.filter(db.func.date(DeskUpdate.timestamp) == db.func.date(datetime.utcnow() - timedelta(days=1))).all()
