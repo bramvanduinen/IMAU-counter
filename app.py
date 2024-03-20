@@ -23,7 +23,7 @@ class DeskUpdate(db.Model):
 
     @property
     def people_count(self):
-        return 11 - (6 - self.desks_with_monitor) + (5 - self.desks_without_monitor)
+        return (11 - self.desks_with_monitor - self.desks_without_monitor)
 
 @app.route('/')
 def home():
