@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="peopleOverTimeChart"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script>alert("Hello, World!");</script> -->
+    <script type="text/javascript">
+        // Extracting data passed from Flask and converting to JSON
+        const updatesJsonData = {{ updates_data|tojson | safe }};
+        const labels = updatesJsonData.map(update => update[0]);
+        const dataPoints = updatesJsonData.map(update => update[1]);
+        console.log(updatesJsonData);  // Add this line
+        console.log(labels);  // Should show an array of timestamp strings
+        console.log(dataPoints);  // Should show an array of numbers
+
+      const ctx = document.getElementById('peopleOverTimeChart').getContext('2d');
+      const peopleOverTimeChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: labels,
+              datasets: [{
+                  label: 'People Over Time',
+                  data: dataPoints,
+                  borderColor: 'rgba(98, 93, 245, 1)', // Line color
+                  backgroundColor: 'rgba(98, 93, 245, 0.5)', // Fill color
+                  fill: true,
+              }]
+          },
+          options: {
+              scales: {
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero: true
+                      }
+                  }],
+                  xAxes: [{
+                      type: 'time',
+                      time: {
+                          unit: 'day'
+                      }
+                  }]
+              }
+          }
+      });
+    </script>
+    
+</body>
+</html>
