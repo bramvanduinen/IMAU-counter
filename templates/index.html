@@ -10,17 +10,45 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%; /* Ensures that the html and body tags take up the full viewport height */
+            margin: 0; /* Resets any default margin */
+            padding: 0; /* Resets any default padding */
+        }
+
         body {
             background: linear-gradient(to bottom right, #fafafa, #9eabe4); /* Soft color gradient */
+            background-attachment: fixed; /* This will fix the background in place, even when scrolling */
+            background-size: cover; /* This will ensure the background covers the entire viewport */
             font-family: 'Montserrat', sans-serif;
-            margin: 0;
+            color: #333; /* Dark text for contrast */
+            min-height: 100vh; /* Minimum height to fill the viewport */
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            color: #333; /* Dark text for contrast */
         }
+
+        .container {
+            flex-grow: 1; /* Allows the container to fill available space in the flex-direction */
+            display: flex; /* Establishes a flex container */
+            flex-direction: column; /* Stacks children vertically */
+            justify-content: center; /* Centers children vertically in the container */
+            /* align-items: center; Centers children horizontally in the container */
+            width: 100%; /* Takes the full width of the parent */
+            /* padding: 20px; Provides padding around the content */
+        }
+
+        /* Add a specific class for the chart's container to control its size */
+        .chart-container {
+            width: 100%; /* Full width of its parent container */
+            min-height: 300px; /* Set a minimum height for the chart container */
+        }
+
+        /* Ensure the canvas within the chart container fills its parent */
+        .chart-container canvas {
+            width: 100% !important; /* Full width */
+            height: 100% !important; /* Full height */
+        }
+
         h1 {
             font-size: 3rem;
             color: #6764c0;
@@ -88,7 +116,7 @@
         .equal-height .card {
             width: 100%; /* Makes sure the card stretches to fill the column */
             flex-grow: 1; /* Allows the card to grow to fill the space */
-            min-height: 200px; /* Adjust the value as needed */
+            min-height: 50px; /* Adjust the value as needed */
             /* max-height: 100 px; */
         }
         .update-form-container {
@@ -102,6 +130,11 @@
             .update-form-container {
                 margin-top: 20px; /* Add space between the cards and form on smaller screens */
             }
+        }
+        .row {
+            display: flex;
+            align-items: center; /* This centers the flex items (columns) vertically */
+            justify-content: center; /* This centers the flex items (columns) horizontally, if needed */
         }
 </style>
 </head>
@@ -117,7 +150,7 @@
                     <div class="col-md-6 col-lg-6">
                         <div class="card monitor text-white mb-4">
                             <div class="card-body">
-                                <h5 class="card-title">Desks with Monitor</h5>
+                                <h5 class="card-title"># Desks with monitor</h5>
                                 <p class="card-text">{{ data['desks_with_monitor'] }}</p>
                             </div>
                         </div>
@@ -126,7 +159,7 @@
                     <div class="col-md-6 col-lg-6">
                         <div class="card nomonitor text-white mb-4">
                             <div class="card-body">
-                                <h5 class="card-title">Desks without Monitor</h5>
+                                <h5 class="card-title"># Desks without monitor</h5>
                                 <p class="card-text">{{ data['desks_without_monitor'] }}</p>
                             </div>
                         </div>
@@ -138,7 +171,7 @@
                     <div class="col-md-6 col-lg-6">
                         <div class="card knmi text-white mb-4">
                             <div class="card-body">
-                                <h5 class="card-title">KNMI Status</h5>
+                                <h5 class="card-title">KNMI boys present?</h5>
                                 <p class="card-text">{{ data['knmi_status'] }}</p>
                             </div>
                         </div>
@@ -189,7 +222,7 @@
         </div> <!-- End of the main row -->
     </div> <!-- End of the container -->
 
-    <div class = "container mt-4">
+    <div class = "container chart-container mt-4">
         <canvas id="myChart" style="max-width: 50%; height: auto;"></canvas>
     </div>
 
