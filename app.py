@@ -32,8 +32,8 @@ def home():
         # Update 'data' dictionary with the latest values.
         data['desks_with_monitor'] = latest_update.desks_with_monitor
         data['desks_without_monitor'] = latest_update.desks_without_monitor
-        tz = timezone(timedelta(hours=1))
-        data['last_updated'] = latest_update.timestamp.astimezone(tz).strftime("%d/%m/%Y %H:%M:%S")
+        # tz = timezone(timedelta(hours=1))
+        data['last_updated'] = latest_update.timestamp.strftime("%d/%m/%Y %H:%M:%S")
     # graph
     updates_today = DeskUpdate.query.filter(db.func.date(DeskUpdate.timestamp) == db.func.date(datetime.utcnow())).all()
     updates_yesterday = DeskUpdate.query.filter(db.func.date(DeskUpdate.timestamp) == db.func.date(datetime.utcnow() - timedelta(days=1))).all()
