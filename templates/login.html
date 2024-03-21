@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dropdown" style="float: right;">
+        <button class="dropbtn">Profile</button>
+        <div class="dropdown-content">
+            <a href="#">Edit Profile</a>
+            <a href="#">Change Password</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+    <h2>Welcome, {{ username }}!</h2>
+    <form action="/form" method="post">
+        <!-- Add your form fields here -->
+        <label for="sampleTime">Sample Time:</label>
+        <select id="sampleTimeHour" name="sampleTimeHour">
+            <!-- Options for hours -->
+            {% for hour in range(0, 24) %}
+                <option value="{{ hour }}">{{ '%02d' % hour }}</option>
+            {% endfor %}
+        </select> :
+        <select id="sampleTimeMinute" name="sampleTimeMinute">
+            <!-- Options for minutes in 15-minute intervals -->
+            {% for minute in range(0, 60, 15) %}
+                <option value="{{ minute }}">{{ '%02d' % minute }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+    <p><a href="/">Home</a></p>
+</body>
+</html>
