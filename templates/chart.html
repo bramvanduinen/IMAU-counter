@@ -1,0 +1,52 @@
+<div class="container chart-container mt-4">
+    <canvas id="myChart" style="max-width: 50%; height: auto;"></canvas>
+</div>
+
+<script type="text/javascript">
+    // Extracting data passed from Flask and converting to JSON
+    const updatesJsonData = {{ updates_data|tojson | safe }};
+    const labels = updatesJsonData.map(update => update[0]);
+    const dataPoints = updatesJsonData.map(update => update[1]);
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    const mixedChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    type: 'line',
+                    data: dataPoints,
+                    borderColor: '#5148C1',
+                    fill: true
+                },
+                {
+                    data: dataPoints,
+                    backgroundColor: '#5148C1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                yAxes: [{
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    id: 'y-axis-1',
+                    scaleLabel: {
+                        display: true,
+                        labelString: '# of people at IMAU'
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            },
+            legend: {
+                display: false
+            }
+        }
+    });
+</script>
