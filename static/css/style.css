@@ -1,4 +1,17 @@
 <style>
+@import url('https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+
+
+/* Your custom styles */
+body {
+    font-family: 'Montserrat', sans-serif;
+    /* Add more custom styles here */
+}
+
+
 html, body {
     height: 100%; /* Ensures that the html and body tags take up the full viewport height */
     margin: 0; /* Resets any default margin */
