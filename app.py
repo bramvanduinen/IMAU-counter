@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 
@@ -12,6 +13,26 @@ data = {
     "last_updated": "Not updated yet"
 }
 
+def reset_data():
+    with app.app_context():
+        print('reset')
+        tz = timezone(timedelta(hours=1))
+        data["desks_with_monitor"] = 6
+        data["desks_without_monitor"] = 5
+        data["knmi_status"] = "No"
+        data["last_updated"] = datetime.now(tz).strftime("%d/%m/%Y %H:%M:%S")
+
+        # Create a new DeskUpdate instance with the updated data
+        update_entry = DeskUpdate(desks_with_monitor=data["desks_with_monitor"], desks_without_monitor=data["desks_without_monitor"])
+        update_entry.timestamp = datetime.now(tz)  # This line sets the timestamp with timezone
+
+        # Add the new entry to the session and commit the changes
+        db.session.add(update_entry)
+        db.session.commit()
+    
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=reset_data, trigger="interval", days=1, start_date='2022-01-01 00:00:00')
+scheduler.start()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 
